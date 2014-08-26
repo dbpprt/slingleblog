@@ -1,0 +1,5 @@
+<div>
+    <ul class="blog" ng-show="vm.post" class="simple-fade" ng-if="vm.post">
+        <li new-scope ng-init="post = vm.post; isArticleView = true" ng-include="'shared/post.html'"></li>
+    </ul>
+</div>

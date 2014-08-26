@@ -1,0 +1,16 @@
+{
+  "name": "change-me",
+  "dependencies": {
+    "angular-bootstrap": "*",
+    "bootstrap": "~3.2.0",
+    "definitelyTyped": "https://github.com/borisyankov/DefinitelyTyped.git",
+    "font-awesome": "~4.1.0",
+    "angular-route": "*",
+    "open-sans-fontface": "~1.1.0",
+    "angular-animate": "*",
+    "angular-loading-bar": "*",
+    "angular-resource": "*",
+    "angular-sanitize": "*",
+    "SyntaxHighlighter": "~3.0.83"
+  }
+}

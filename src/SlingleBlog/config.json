@@ -1,0 +1,8 @@
+{
+  "enable-error-page": true,
+  "default-files": [
+    "index.html"
+  ],
+  "api-error-policy": "always",
+  "data-directory": "%SystemDrive%\\slingle"
+}

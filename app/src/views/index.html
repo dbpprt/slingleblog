@@ -1,0 +1,100 @@
+﻿<!doctype html>
+<html lang="en-us" ng-app="app">
+<head prefix="og: http://ogp.me/ns#" ng-controller="GlobalController as global">
+    <meta charset="utf-8"/>
+    <title>im awesome</title>
+    <meta name="description" content="@Blog.Description"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+
+    <!--<link type="application/rsd+xml" rel="edituri" title="RSD" href="~/views/robots/rsd" />
+    <link type="application/rss+xml" rel="alternate" title="@Blog.Title" href="~/feed/rss/" />
+    <link type="application/atom+xml" rel="alternate" title="@Blog.Title" href="~/feed/atom/" />-->
+    <!--<link rel="shortcut icon" href="@Blog.FingerPrint(" />favicon.ico")" type="image/x-icon" />-->
+    <!--<link rel="dns-prefetch" href="http://gravatar.com/" />-->
+    <!--<meta name="application-name" content="@Blog.Title" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+
+    <meta property="og:title" content="@Page.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="@Blog.Image" />
+    <meta property="og:url" content="@(Request.Url.Scheme +"-->
+    <!-- inject:css -->
+    <!-- endinject -->
+</head>
+<body itemscope itemtype="http://schema.org/Blog">
+
+<div class="container-fluid" id="site-wrapper" >
+    <div class="col-xs-12 col-sm-3 col-md-2 rightbar" id="secondary" style="display: inline-block;">
+        <div new-scope ng-init="myVar = 'one instance'" ng-include="'shared/rightbar.html'"></div>
+    </div>
+    <div class="row site-wrapper">
+        <div class="col-xs-12 col-sm-9 col-md-10 ease" id="site-canvas">
+            <div ng-include="'shared/about.html'"></div>
+            <div ng-include="'shared/leftbar.html'"></div>
+
+            <div ng-view>
+
+            </div>
+
+
+        </div>
+    </div>
+    <!--
+    <div ng-include="'shared/footer.html'"></div>
+    -->
+</div>
+
+<!--<div class="row row-offcanvas row-offcanvas-right">-->
+<!--<header role="banner">-->
+<!--<span itemprop="name"><a href="~/" itemprop="url">@Blog.Title</a></span><br />-->
+<!--<em>@Blog.Description</em>-->
+<!--</header>-->
+
+<!--<div role="main" class="col-md-8" ng-controller="HomeController">-->
+<!--<div class="well">-->
+<!--<h1>{{ displayText + "  " + counter }}</h1>-->
+
+<!--<table>-->
+<!--<tbody>-->
+<!--<tr ng-repeat="entry in aList">-->
+<!--<td>{{ entry }}</td>-->
+<!--</tr>-->
+<!--<div ng-include="'shared/shared1.html'"></div>-->
+<!--</tbody>-->
+<!--</table>-->
+
+<!--</div>-->
+<!--</div>-->
+
+<!--<aside role="complementary" class="col-md-3 col-md-offset-1">-->
+<!--<section>-->
+<!--<h3>About me</h3>-->
+<!--<p>-->
+<!--Lorem ipsum dolor sit amet, consectetur adipiscing elit fusce vel sapien elit in malesuada semper.-->
+<!--</p>-->
+<!--</section>-->
+
+<!--<section>-->
+<!--<h3>My side projects</h3>-->
+<!--<ul>-->
+<!--<li>Project 1</li>-->
+<!--<li>Project 2</li>-->
+<!--<li>Project 3</li>-->
+<!--</ul>-->
+<!--</section>-->
+<!--</aside>-->
+<!--</div>-->
+<!--</div>-->
+
+<!--<footer class="text-center" role="contentinfo" itemscope itemtype="http://schema.org/Person" itemprop="author">-->
+<!--<span>-->
+<!--Copyright &copy; @DateTime.Now.Year-->
+<!--<a href="http://madskristensen.net" itemprop="url name">Mads Kristensen</a>-->
+<!--</span>-->
+<!--</footer>-->
+
+<!-- inject:js -->
+<!-- endinject -->
+</body>
+</html>
