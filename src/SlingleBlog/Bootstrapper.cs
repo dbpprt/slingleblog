@@ -6,16 +6,21 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using FileBiggy.Contracts;
+using FileBiggy.Factory;
+using FileBiggy.IoC;
 using Microsoft.Owin;
 using Microsoft.Owin.Diagnostics;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
+using Newtonsoft.Json.Serialization;
 using Owin;
 using SlingleBlog.Common;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Logging;
 using SlingleBlog.Common.Unity;
+using SlingleBlog.DataAccess;
 
 namespace SlingleBlog
 {
@@ -36,6 +41,13 @@ namespace SlingleBlog
         public override void RegisterDependencies(IUnityContainer container)
         {
             container.RegisterInstance<IConfiguration>(_configuration);
+
+            var entityContext = ContextFactory.Create<EntityContext>()
+                .AsJsonDatabase()
+                .WithDatabaseDirectory(_configuration.StorageBasePath)
+                .Build();
+            container.RegisterInstance<IBiggyContext>(entityContext);
+            container.RegisterType(typeof (IEntitySet<>), typeof (Repository<>), new ContainerControlledLifetimeManager());
         }
 
         protected override Task ApplicationStartup()
@@ -52,6 +64,12 @@ namespace SlingleBlog
             base.RegisterRoutes(routes);
 
 
+        }
+
+        protected override void ConfigureHttpConfiguration(HttpConfiguration configuration)
+        {
+            base.ConfigureHttpConfiguration(configuration);
+            configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
         protected override ErrorPageOptions ErrorPageOptions()

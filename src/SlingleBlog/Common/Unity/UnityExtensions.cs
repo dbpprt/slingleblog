@@ -47,5 +47,6 @@ namespace SlingleBlog.Common.Unity
             Guard.ArgumentNotNull(container, "container");
             return container.RegisterType(typeof(TFrom), typeof(TTo), typeof(TTo).Name, lifetimeManager, injectionMembers);
         }
+
     }
 }
