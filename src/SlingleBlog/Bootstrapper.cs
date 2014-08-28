@@ -15,9 +15,11 @@ using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using Newtonsoft.Json.Serialization;
+using Nito.AsyncEx;
 using Owin;
 using SlingleBlog.Common;
 using SlingleBlog.Common.Configuration;
+using SlingleBlog.Common.Framework;
 using SlingleBlog.Common.Logging;
 using SlingleBlog.Common.Unity;
 using SlingleBlog.DataAccess;
@@ -27,11 +29,14 @@ namespace SlingleBlog
     public class Bootstrapper : SlingleBootstrapper
     {
         private readonly IConfiguration _configuration;
+        private readonly AsyncReaderWriterLock _lock;
+
         public const string ConfigFile = "config.json";
 
         public Bootstrapper(IConfiguration configuration)
         {
             _configuration = configuration;
+            _lock = new AsyncReaderWriterLock();
         }
 
         public Bootstrapper() : this(
@@ -48,6 +53,8 @@ namespace SlingleBlog
                 .Build();
             container.RegisterInstance<IBiggyContext>(entityContext);
             container.RegisterType(typeof (IEntitySet<>), typeof (Repository<>), new ContainerControlledLifetimeManager());
+
+            container.RegisterInstance(new AsyncReaderWriterLock());
         }
 
         protected override Task ApplicationStartup()
@@ -64,6 +71,16 @@ namespace SlingleBlog
             base.RegisterRoutes(routes);
 
 
+        }
+
+        protected override async Task ExecutePipeline(Func<IDictionary<string, object>, Task> next, IDictionary<string, object> environment, IUnityContainer scope)
+        {
+            using (var upgradable = await _lock.UpgradeableReaderLockAsync())
+            {
+                scope.RegisterInstance(upgradable);
+
+                await base.ExecutePipeline(next, environment, scope);
+            }
         }
 
         protected override void ConfigureHttpConfiguration(HttpConfiguration configuration)

@@ -1,0 +1,7 @@
+<div>
+    <ul class="blog" ng-show="vm.posts.length">
+        <li ng-repeat-start="post in vm.posts">
+        <li new-scope ng-init="post = post" ng-include="'shared/post.html'" class="simple-fade"></li>
+        <li ng-repeat-end></li>
+    </ul>
+</div>

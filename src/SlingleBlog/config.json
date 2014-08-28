@@ -1,8 +1,10 @@
 {
-  "enable-error-page": true,
-  "default-files": [
+    "api-key":  "5X2WbulsDjjfEMgYG21oF3TFU5RIFRvh7MNLNvexyq1y0n1OLE3AHoaBmqLgyKaOAee3egYOIxxtEtuIk4fu8cDLihoGbiazIVNi5HkZYZxexaK2ibvi1vAAzD9ZceD7",
+    "api-key-header-field":  "AccessToken",
+    "enable-error-page": true,
+    "default-files": [
     "index.html"
-  ],
-  "api-error-policy": "always",
-  "data-directory": "%SystemDrive%\\slingle"
+    ],
+    "api-error-policy": "always",
+    "data-directory": "%SystemDrive%\\slingle"
 }

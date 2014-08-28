@@ -10,10 +10,16 @@ namespace SlingleBlog.Common.Configuration
 
         string PublicPath { get; }
 
+        string TempDirectory { get; }
+
         bool UseErrorPage { get; }
 
         List<string> DefaultFiles { get; }
 
         string ApiErrorPolicy { get; }
+
+        string ApiKey { get;}
+
+        string ApiKeyHeaderField { get;}
     }
 }

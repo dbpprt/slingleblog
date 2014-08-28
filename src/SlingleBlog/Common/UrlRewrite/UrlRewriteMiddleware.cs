@@ -4,7 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Routing;
 using Microsoft.Owin;
 
-namespace SlingleBlog.Middlewares
+namespace SlingleBlog.Common.UrlRewrite
 {
     public class UrlRewriteMiddleware : OwinMiddleware
     {

@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Dependencies;
 using Microsoft.Owin;
 using Microsoft.Owin.Diagnostics;
-using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using Owin;
-using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Logging;
 using SlingleBlog.Common.Unity;
 using SlingleBlog.Common.UrlRewrite;
-using SlingleBlog.Middlewares;
 
-namespace SlingleBlog.Common
+namespace SlingleBlog.Common.Framework
 {
     public abstract class SlingleBootstrapper : IUnityModule
     {
@@ -47,6 +41,12 @@ namespace SlingleBlog.Common
 
         public abstract void RegisterDependencies(IUnityContainer container);
 
+        protected virtual Task ExecutePipeline(
+            Func<IDictionary<string, object>, Task> next, IDictionary<string, object> environment, IUnityContainer scope)
+        {
+            return next.Invoke(environment);
+        }
+
         public virtual void Build(IAppBuilder app)
         {
             var errorPageOptions = ErrorPageOptions();
@@ -64,7 +64,7 @@ namespace SlingleBlog.Common
             app.SetApplicationContainer(dependencyResolver);
             app.Use(
                 new Func<Func<IDictionary<string, object>, Task>, Func<IDictionary<string, object>, Task>>(
-                    next => new ContainerMiddleware(next, app, ConfigureRequestContainer, ApplicationStartup).Invoke));
+                    next => new ContainerMiddleware(next, app, ConfigureRequestContainer, ApplicationStartup, ExecutePipeline).Invoke));
 
             var config = new HttpConfiguration
             {
@@ -137,20 +137,24 @@ namespace SlingleBlog.Common
             private readonly Func<IDictionary<string, object>, Task> _next;
             private readonly IAppBuilder _app;
             private readonly Func<IUnityContainer, IOwinContext, Task> _configureRequestContainer;
+            readonly Func<Func<IDictionary<string, object>, Task>, IDictionary<string, object>, IUnityContainer, Task> _invokePipeline;
             private readonly Func<Task> _applicationStartup;
             private readonly SemaphoreSlim _applicationStartupLock = new SemaphoreSlim(1);
             private int _requests = 0;
+            private object _runPipeline;
 
             public ContainerMiddleware(
                 Func<IDictionary<string, object>, Task> next,
                 IAppBuilder app,
                 Func<IUnityContainer, IOwinContext, Task> configureRequestContainer,
-                Func<Task> applicationStartup)
+                Func<Task> applicationStartup,
+                Func<Func<IDictionary<string, object>, Task>, IDictionary<string, object>, IUnityContainer, Task> invokePipeline)
             {
                 _next = next;
                 _app = app;
                 _configureRequestContainer = configureRequestContainer;
                 _applicationStartup = applicationStartup;
+                _invokePipeline = invokePipeline;
             }
 
             public async Task Invoke(IDictionary<string, object> environment)
@@ -176,8 +180,16 @@ namespace SlingleBlog.Common
                 using (var scope = environment.SetRequestContainer(_app))
                 {
                     _configureRequestContainer(scope.GetUnderlayingContainer(), new OwinContext(environment));
-                    await _next.Invoke(environment);
+                    await _invokePipeline.Invoke(_next.Invoke, environment, scope.GetUnderlayingContainer());
                 }
+            }
+
+            public Task ExecutePipeline(
+                Func<IDictionary<string, object>, Task> next, IDictionary<string, object> environment, IUnityContainer scope)
+            {
+                Func<Func<IDictionary<string, object>, IDictionary<string, string>, IUnityContainer>, Task>
+                    invokePipeline;
+                return _next.Invoke(environment);
             }
         }
 

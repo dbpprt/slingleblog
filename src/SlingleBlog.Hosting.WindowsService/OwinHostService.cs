@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Owin.Hosting;
 using Owin;
-using SlingleBlog.Common.Configuration;
 
 namespace SlingleBlog.Hosting.WindowsService
 {
@@ -18,9 +15,6 @@ namespace SlingleBlog.Hosting.WindowsService
 
         public void Start()
         {
-            var endpoint = "";
-
-
             _webApplication = WebApp.Start("http://+:8080/", Startup);
         }
 

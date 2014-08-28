@@ -14,7 +14,6 @@ IF EXIST .nuget\nuget.exe goto restore
 md .nuget
 copy %CACHED_NUGET% .nuget\nuget.exe > nul
 
-:restore
 echo Restoring nuget packages
 IF NOT EXIST packages\Npm.js* .nuget\NuGet.exe install npm.js -o packages -nocache
 IF NOT EXIST packages\Bower.js* .nuget\NuGet.exe install bower.js -o packages -nocache

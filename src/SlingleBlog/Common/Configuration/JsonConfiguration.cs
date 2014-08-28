@@ -21,6 +21,12 @@ namespace SlingleBlog.Common.Configuration
         [JsonProperty("data-directory")]
         public string ContractedDataDirectory { get; set; }
 
+        [JsonProperty("api-key-header-field")]
+        public string ApiKeyHeaderField { get; set; }
+
+        [JsonProperty("api-key")]
+        public string ApiKey { get; set; }
+
         public string BasePath
         {
             get
@@ -40,6 +46,17 @@ namespace SlingleBlog.Common.Configuration
                     );
             }
         }
+
+        public string TempDirectory
+        {
+            get
+            {
+                return DirectoryUtilities.EnsureExists(
+                    Path.Combine(BasePath, "temp")
+                    );
+            }
+        }
+
 
         public string PublicPath
         {

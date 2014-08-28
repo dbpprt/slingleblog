@@ -1,0 +1,50 @@
+<!--<li class="">-->
+<div class="article-badge"><i class="fa fa-send"></i></div>
+<!--<div class="article">-->
+<article itemtype="http://schema.org/BlogPosting" itemscope="" itemprop="blogPost">
+    <div class="article-heading">
+        <div class="article-title">
+            <h1 class="title" itemprop="name"><a
+                    href="/archive/2014/06/30/github-issues-saved-my-marriage/"
+                    itemprop="url">{{ post.title }}</a></h1>
+
+
+            <div class="article-meta">
+                <span class="date">
+                    <time itemprop="datePublished" datetime="{{ post.pubDate }}">
+                        <i class="fa fa-fw fa-calendar"></i>
+                        {{ post.pubDate }}
+                    </time>
+                </span>
+                <span class="tags" ng-repeat="category in post.categories">
+                    <i class="fa fa-fw fa-tag">
+                    </i>
+                    {{ category }}
+                </span>
+                <span class="comments">
+                    <a href="/archive/2014/06/30/github-issues-saved-my-marriage/#disqus_thread">
+                        <i class="fa fa-fw fa-comment"></i>
+                        comments
+                    </a>
+                </span>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="article-body" itemprop="articleBody">
+        <div ng-bind-html="post.content">
+
+        </div>
+        <hr/>
+        <div class="article-footer" ng-hide="isArticleView">
+            <a class="btn btn-primary btn-sm pull-right" href="/article/{{ post.slug }}">
+                <i class="fa fa-fw fa-glass"></i>Continue reading
+            </a>
+        </div>
+
+    </div>
+</article>
+<!--</div>-->
+
+
+<!--</li>-->

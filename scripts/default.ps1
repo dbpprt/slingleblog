@@ -4,23 +4,32 @@ properties {
     $build_dir = "$base_dir\build"
     $scripts_dir = "$base_dir\scripts"
     $sln_file = "$base_dir\src\SlingleBlog.sln"
-    $src_dir = "$base_dir\src"
-
+    
+	$src_dir = "$base_dir\src"
+	$src_packages = "$src_dir\packages"
+	
+	$nuget_path = "$base_dir\.nuget\NuGet.exe"
+	
     $environment = ""   
-	$revision = "12"    
-	$version = "1.0.0." 
+	$revision = "1"    
+	$version = "0.0." 
 	
     $header = "$base_dir\header-agpl.txt"
 
 	$config = "Release"
 }
 
-
 Framework "4.5.1x64"
 
-task default -depends Clean, Compile
+task default -depends Clean, Version, Restore-Packages, Compile
 
-task release -depends Clean, Version, License, Compile, Zip
+Task Restore-Packages -Description "Restores all nuget packages" {
+    $packageConfigs = Get-ChildItem $src_dir -Recurse | where{$_.Name -eq "packages.config"}
+    foreach($packageConfig in $packageConfigs){
+        Write-Host "Restoring" $packageConfig.FullName
+        & $nuget_path i $packageConfig.FullName -o $src_packages
+    }
+}
 
 Task License -Description "Add license header to source files" {
     . "$scripts_dir\license-header.ps1"
