@@ -21,5 +21,7 @@ namespace SlingleBlog.Common.Configuration
         string ApiKey { get;}
 
         string ApiKeyHeaderField { get;}
+
+        string TargetFolderHeaderField { get; }
     }
 }

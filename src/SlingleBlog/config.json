@@ -1,6 +1,7 @@
 {
     "api-key":  "5X2WbulsDjjfEMgYG21oF3TFU5RIFRvh7MNLNvexyq1y0n1OLE3AHoaBmqLgyKaOAee3egYOIxxtEtuIk4fu8cDLihoGbiazIVNi5HkZYZxexaK2ibvi1vAAzD9ZceD7",
     "api-key-header-field":  "AccessToken",
+    "target-folder-header-field":  "TargetFolder",
     "enable-error-page": true,
     "default-files": [
     "index.html"

@@ -4,13 +4,15 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Web.Http;
+using FileBiggy.Common;
 using Nito.AsyncEx;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Logging;
-using SlingleBlog.Common.Utilities;
 using SlingleBlog.Properties;
+using DirectoryUtilities = SlingleBlog.Common.Utilities.DirectoryUtilities;
 
 namespace SlingleBlog.Controllers
 {
@@ -37,17 +39,27 @@ namespace SlingleBlog.Controllers
         [UsedImplicitly]
         public async Task<IHttpActionResult> HandleDeployment()
         {
-            if (Request.Headers.All(header => header.Key != "AccessToken"))
+            if (Request.Headers.All(header => header.Key != _configuration.ApiKeyHeaderField))
             {
                 return BadRequest();
             }
 
             var accessToken = Request.Headers
-                .First(header => header.Key == "AccessToken")
+                .First(header => header.Key == _configuration.ApiKeyHeaderField)
                 .Value
                 .FirstOrDefault();
 
-            if (accessToken == null)
+            var targetFolder = "";
+
+            if (Request.Headers.Any(header => header.Key == _configuration.TargetFolderHeaderField))
+            {
+                targetFolder = Request.Headers
+                    .First(header => header.Key == _configuration.TargetFolderHeaderField)
+                    .Value
+                    .FirstOrDefault() ?? "";
+            }
+
+            if (accessToken == null || accessToken != _configuration.ApiKey)
             {
                 _log.Write()
                     .IsFailureAudit()
@@ -71,7 +83,7 @@ namespace SlingleBlog.Controllers
                     File.WriteAllBytes(workingPath, data);
                     ZipFile.ExtractToDirectory(workingPath, extractDirectory);
 
-                    DirectoryUtilities.Merge(extractDirectory, _configuration.PublicPath);
+                    DirectoryUtilities.Merge(extractDirectory, Path.Combine(_configuration.PublicPath, targetFolder));
 
                     Directory.Delete(extractDirectory, true);
 

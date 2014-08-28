@@ -24,6 +24,9 @@ namespace SlingleBlog.Common.Configuration
         [JsonProperty("api-key-header-field")]
         public string ApiKeyHeaderField { get; set; }
 
+        [JsonProperty("target-folder-header-field")]
+        public string TargetFolderHeaderField { get; set; }
+
         [JsonProperty("api-key")]
         public string ApiKey { get; set; }
 
