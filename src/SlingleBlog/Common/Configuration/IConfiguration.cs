@@ -16,6 +16,8 @@ namespace SlingleBlog.Common.Configuration
 
         List<string> DefaultFiles { get; }
 
+        List<IRewriteRule> RewriteRules { get; set; }
+
         string ApiErrorPolicy { get; }
 
         string ApiKey { get;}

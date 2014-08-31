@@ -1,6 +1,7 @@
 {
   "dependencies": {},
   "devDependencies": {
+    "bower": "*",
     "event-stream": "^3.1.5",
     "gulp": "^3.8.6",
     "gulp-angular-filesort": "^0.1.1",
@@ -18,13 +19,15 @@
     "gulp-ngmin": "^0.3.0",
     "gulp-obfuscate": "^0.2.8",
     "gulp-plumber": "^0.6.3",
+    "gulp-print": "^1.1.0",
     "gulp-replace": "^0.3.0",
     "gulp-rev": "^0.4.1",
+    "gulp-rimraf": "^0.1.0",
     "gulp-typescript-compiler": "^1.0.0",
     "gulp-uglify": "^0.3.1",
     "gulp-watch": "^0.6.8",
     "gulp-zip": "^0.4.0",
-    "request": "^2.39.0",
-	"bower": "*"
+    "q": "^1.0.1",
+    "request": "^2.39.0"
   }
 }

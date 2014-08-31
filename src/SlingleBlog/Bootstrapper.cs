@@ -23,6 +23,7 @@ using SlingleBlog.Common.Framework;
 using SlingleBlog.Common.Logging;
 using SlingleBlog.Common.Unity;
 using SlingleBlog.DataAccess;
+using RewriteRule = SlingleBlog.Common.UrlRewrite.RewriteRule;
 
 namespace SlingleBlog
 {
@@ -73,6 +74,13 @@ namespace SlingleBlog
 
         }
 
+        protected override void RegisterRewriteRules(List<IRewriteRule> rules)
+        {
+            base.RegisterRewriteRules(rules);
+
+            rules.AddRange(_configuration.RewriteRules);
+        }
+
         protected override async Task ExecutePipeline(Func<IDictionary<string, object>, Task> next, IDictionary<string, object> environment, IUnityContainer scope)
         {
             using (var upgradable = await _lock.UpgradeableReaderLockAsync())
@@ -108,12 +116,13 @@ namespace SlingleBlog
             return System.Web.Http.IncludeErrorDetailPolicy.Always;
         }
 
-        protected override StaticFileOptions StaticFileOptions()
+        protected override FileServerOptions FileServerOptions()
         {
-            return new StaticFileOptions
+            return new FileServerOptions
             {
                 FileSystem = new PhysicalFileSystem(_configuration.PublicPath),
-                RequestPath = new PathString("")
+                RequestPath = new PathString(""),
+                EnableDefaultFiles = true,
             };
         }
     }

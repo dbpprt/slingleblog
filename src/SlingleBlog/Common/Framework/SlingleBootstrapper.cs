@@ -8,9 +8,11 @@ using Microsoft.Owin.Diagnostics;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using Owin;
+using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Logging;
 using SlingleBlog.Common.Unity;
 using SlingleBlog.Common.UrlRewrite;
+using RewriteRule = SlingleBlog.Common.UrlRewrite.RewriteRule;
 
 namespace SlingleBlog.Common.Framework
 {
@@ -78,7 +80,7 @@ namespace SlingleBlog.Common.Framework
 
             app.UseWebApi(new OwinDependencyScopeHttpServerAdapter(config));
 
-            var rewriteRules = new List<RewriteRule>();
+            var rewriteRules = new List<IRewriteRule>();
             RegisterRewriteRules(rewriteRules);
             var rewriteHttpRoutes = new HttpRouteCollection();
 
@@ -93,17 +95,17 @@ namespace SlingleBlog.Common.Framework
             }
             app.Use<UrlRewriteMiddleware>(rewriteHttpRoutes);
 
-            var staticFileOptions = StaticFileOptions();
+            var staticFileOptions = FileServerOptions();
             if (staticFileOptions != null)
             {
-                app.UseStaticFiles(staticFileOptions);
+                app.UseFileServer(staticFileOptions);
             }
 
         }
 
         protected virtual void RegisterRoutes(HttpRouteCollection routes) { }
 
-        protected virtual void RegisterRewriteRules(ICollection<RewriteRule> rules) { }
+        protected virtual void RegisterRewriteRules(List<IRewriteRule> rewriteRules) { }
 
         protected virtual Task ApplicationStartup()
         {
@@ -127,7 +129,7 @@ namespace SlingleBlog.Common.Framework
             return null;
         }
 
-        protected virtual StaticFileOptions StaticFileOptions()
+        protected virtual FileServerOptions FileServerOptions()
         {
             return null;
         }

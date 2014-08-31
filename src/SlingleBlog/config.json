@@ -4,8 +4,16 @@
     "target-folder-header-field":  "TargetFolder",
     "enable-error-page": true,
     "default-files": [
-    "index.html"
+        "index.html"
     ],
     "api-error-policy": "always",
-    "data-directory": "%SystemDrive%\\slingle"
+    "data-directory": "%SystemDrive%\\slingle",
+    "rewrite-rules" :  [
+          {
+              "name":  "angularjs-html5-navigation",
+              "template":  "{*data}",
+              "rewrite-to":  "/index.html",
+              "constraint":  ".*?$(?<!\\.js|.css|.eot|.png)"
+          }
+      ]
 }

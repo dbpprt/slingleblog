@@ -101,8 +101,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Common\Configuration\IRewriteRule.cs" />
     <Compile Include="Common\Configuration\JsonConfiguration.cs" />
     <Compile Include="Common\Configuration\IConfiguration.cs" />
+    <Compile Include="Common\Configuration\JsonRewriteRule.cs" />
     <Compile Include="Common\Logging\AggregateLog.cs" />
     <Compile Include="Common\Logging\Event.cs" />
     <Compile Include="Common\Logging\EventBuilder.cs" />
