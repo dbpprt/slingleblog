@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using FileBiggy.Contracts;
@@ -16,14 +15,10 @@ using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using Newtonsoft.Json.Serialization;
 using Nito.AsyncEx;
-using Owin;
-using SlingleBlog.Common;
+using OpenQA.Selenium.PhantomJS;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Framework;
-using SlingleBlog.Common.Logging;
-using SlingleBlog.Common.Unity;
 using SlingleBlog.DataAccess;
-using RewriteRule = SlingleBlog.Common.UrlRewrite.RewriteRule;
 
 namespace SlingleBlog
 {
@@ -40,9 +35,10 @@ namespace SlingleBlog
             _lock = new AsyncReaderWriterLock();
         }
 
-        public Bootstrapper() : this(
-            JsonConfiguration.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigFile))
-            ) { }
+        public Bootstrapper()
+            : this(
+                JsonConfiguration.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigFile))
+                ) { }
 
         public override void RegisterDependencies(IUnityContainer container)
         {
@@ -53,9 +49,12 @@ namespace SlingleBlog
                 .WithDatabaseDirectory(_configuration.StorageBasePath)
                 .Build();
             container.RegisterInstance<IBiggyContext>(entityContext);
-            container.RegisterType(typeof (IEntitySet<>), typeof (Repository<>), new ContainerControlledLifetimeManager());
+            container.RegisterType(typeof(IEntitySet<>), typeof(Repository<>), new ContainerControlledLifetimeManager());
 
             container.RegisterInstance(new AsyncReaderWriterLock());
+            container.RegisterInstance(PhantomJSDriverService.CreateDefaultService());
+            container.RegisterType<PhantomJSDriver>(new TransientLifetimeManager(), new InjectionFactory(
+                unityContainer => new PhantomJSDriver(unityContainer.Resolve<PhantomJSDriverService>())));
         }
 
         protected override Task ApplicationStartup()
@@ -63,6 +62,21 @@ namespace SlingleBlog
             Logger.Write("Server started successfully and is ready to receive requests!")
                 .IsVerbose()
                 .Save();
+
+            Task.Factory.StartNew(() =>
+            {
+                using (var engine = UnityContainer.Resolve<PhantomJSDriver>())
+                {
+                    var manage = engine.Manage();
+                    manage.Window.Maximize();
+
+                    engine.Url = "http://localhost:8080/";
+                    engine.Navigate();
+                    Thread.Sleep(2000);
+                    engine.GetScreenshot().SaveAsFile("C:\\slingle\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
+                }
+                return Task.FromResult(0);
+            });
 
             return base.ApplicationStartup();
         }

@@ -43,6 +43,20 @@ namespace SlingleBlog.Common.Framework
 
         public abstract void RegisterDependencies(IUnityContainer container);
 
+        internal static CancellationToken GetShutdownToken(IDictionary<string, object> env)
+        {
+            object value;
+            return env.TryGetValue("host.OnAppDisposing", out value)
+                && value is CancellationToken
+                ? (CancellationToken)value
+                : default(CancellationToken);
+        }
+
+        protected virtual void ApplicationShutdown()
+        {
+            UnityContainer.Dispose();
+        }
+
         protected virtual Task ExecutePipeline(
             Func<IDictionary<string, object>, Task> next, IDictionary<string, object> environment, IUnityContainer scope)
         {
@@ -67,7 +81,7 @@ namespace SlingleBlog.Common.Framework
             app.Use(
                 new Func<Func<IDictionary<string, object>, Task>, Func<IDictionary<string, object>, Task>>(
                     next => new ContainerMiddleware(next, app, ConfigureRequestContainer, ApplicationStartup, ExecutePipeline).Invoke));
-
+            
             var config = new HttpConfiguration
             {
                 DependencyResolver = dependencyResolver,
@@ -101,6 +115,8 @@ namespace SlingleBlog.Common.Framework
                 app.UseFileServer(staticFileOptions);
             }
 
+            var shutdownToken = GetShutdownToken(app.Properties);
+            shutdownToken.Register(ApplicationShutdown);
         }
 
         protected virtual void RegisterRoutes(HttpRouteCollection routes) { }
