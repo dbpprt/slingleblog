@@ -1,12 +1,12 @@
 var deploySettings = {
     release: {
         authorizationToken : "5X2WbulsDjjfEMgYG21oF3TFU5RIFRvh7MNLNvexyq1y0n1OLE3AHoaBmqLgyKaOAee3egYOIxxtEtuIk4fu8cDLihoGbiazIVNi5HkZYZxexaK2ibvi1vAAzD9ZceD7",
-        applicationEndpoint : "http://devapp:8080/api/deploy",
+        applicationEndpoint : "http://localhost:8080/api/deploy",
         targetServerFolder : ""
     },
     debug: {
         authorizationToken : "5X2WbulsDjjfEMgYG21oF3TFU5RIFRvh7MNLNvexyq1y0n1OLE3AHoaBmqLgyKaOAee3egYOIxxtEtuIk4fu8cDLihoGbiazIVNi5HkZYZxexaK2ibvi1vAAzD9ZceD7",
-        applicationEndpoint : "http://devapp:8080/api/deploy",
+        applicationEndpoint : "http://localhost:8080/api/deploy",
         targetServerFolder : ""
     }
 }
@@ -14,7 +14,7 @@ var deploySettings = {
 exports.outputFolder = "build";
 exports.sourceFolder = "src";
 
-exports.buildConfiguration = "release";
+exports.buildConfiguration = "debug";
 
 exports.scriptBundles = [
     {

@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Diagnostics;
+using Microsoft.Owin.Security.OAuth;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using Owin;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Logging;
+using SlingleBlog.Common.Scheduler;
 using SlingleBlog.Common.Unity;
 using SlingleBlog.Common.UrlRewrite;
 using RewriteRule = SlingleBlog.Common.UrlRewrite.RewriteRule;
@@ -26,6 +29,11 @@ namespace SlingleBlog.Common.Framework
         protected ILog Logger
         {
             get { return UnityContainer.Resolve<ILog>(); }
+        }
+
+        protected JobScheduler Scheduler
+        {
+            get { return UnityContainer.Resolve<JobScheduler>(); }
         }
 
         private readonly IUnityContainer _container;
@@ -74,9 +82,14 @@ namespace SlingleBlog.Common.Framework
             _container.RegisterModule(this);
 
             _container.RegisterType<ILog, AggregateLog>(new HierarchicalLifetimeManager());
+            _container.RegisterType<JobScheduler>(new ContainerControlledLifetimeManager());
+
+            var jobs = new List<Job>();
+            RegisterJobs(jobs);
+            jobs.ForEach(_ => _container.RegisterInstance(_.JobName, _, new ContainerControlledLifetimeManager()));
 
             var dependencyResolver = new UnityDependencyResolver(_container);
-
+            
             app.SetApplicationContainer(dependencyResolver);
             app.Use(
                 new Func<Func<IDictionary<string, object>, Task>, Func<IDictionary<string, object>, Task>>(
@@ -92,6 +105,13 @@ namespace SlingleBlog.Common.Framework
             RegisterRoutes(config.Routes);
             ConfigureHttpConfiguration(config);
 
+            var oAuthOptions = OAuthAuthorizationServerOptions();
+            if (oAuthOptions != null)
+            {
+                app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+                app.UseOAuthBearerTokens(oAuthOptions);
+            }
+            
             app.UseWebApi(new OwinDependencyScopeHttpServerAdapter(config));
 
             var rewriteRules = new List<IRewriteRule>();
@@ -117,6 +137,8 @@ namespace SlingleBlog.Common.Framework
 
             var shutdownToken = GetShutdownToken(app.Properties);
             shutdownToken.Register(ApplicationShutdown);
+
+            Scheduler.Start();
         }
 
         protected virtual void RegisterRoutes(HttpRouteCollection routes) { }
@@ -140,12 +162,19 @@ namespace SlingleBlog.Common.Framework
             return System.Web.Http.IncludeErrorDetailPolicy.LocalOnly;
         }
 
+        protected virtual void RegisterJobs(List<Job> jobs) { }
+
         protected virtual ErrorPageOptions ErrorPageOptions()
         {
             return null;
         }
 
         protected virtual FileServerOptions FileServerOptions()
+        {
+            return null;
+        }
+
+        protected virtual OAuthAuthorizationServerOptions OAuthAuthorizationServerOptions()
         {
             return null;
         }

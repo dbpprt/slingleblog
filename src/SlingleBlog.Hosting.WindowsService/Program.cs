@@ -7,6 +7,8 @@ namespace SlingleBlog.Hosting.WindowsService
     {
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
             HostFactory.Run(hostConfigurator =>
             {
                 hostConfigurator.Service<OwinHostService>(serviceConfigurator =>
@@ -24,7 +26,11 @@ namespace SlingleBlog.Hosting.WindowsService
                 hostConfigurator.SetDescription("Hosts a simple and cool single page blog.");
                 hostConfigurator.SetServiceName("SinglePageBlog");
             });
+        }
 
+        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            Console.WriteLine(unhandledExceptionEventArgs.ExceptionObject);
             Console.ReadLine();
         }
     }

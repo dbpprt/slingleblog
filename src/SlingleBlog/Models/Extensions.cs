@@ -7,18 +7,16 @@ namespace SlingleBlog.Models
     static class Extensions
     {
 
-        public static Post RenderPreviewMarkup(this Post post)
+        public static string RenderPreviewMarkup(this Post post)
         {
             const string delimiter = "<!--- end-preview -->";
             var preview = post.Content.Split(new[] {delimiter}, StringSplitOptions.RemoveEmptyEntries).First();
-            post.Content = new Markdown().Transform(preview);
-            return post;
+            return new Markdown().Transform(preview);;
         }
 
-        public static Post RenderMarkup(this Post post)
+        public static string RenderMarkup(this Post post)
         {
-            post.Content = new Markdown().Transform(post.Content);
-            return post;
+            return new Markdown().Transform(post.Content);
         }
     }
 }

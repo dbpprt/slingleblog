@@ -5,31 +5,26 @@ module Application {
     var app = angular.module("app");
 
     app.controller("PostController",
-        ["$scope", "$routeParams", "PostService",
-            ($scope, $routeParams : ng.route.IRouteParamsService, postService)
-                => new PostController($scope, postService, $routeParams)]);
+        ["$routeParams", "ApiService",
+            ($routeParams : ng.route.IRouteParamsService, apiService)
+                => new PostController(apiService, $routeParams)]);
 
     export class PostController {
-        scope: any;
-        postService: IPostResource;
+        apiService: ApiService;
         post: IPostModel;
 
         constructor(
-            $scope: IHomeControllerScope,
-            postService: IPostResource,
+            apiService: ApiService,
             $routeParams : ng.route.IRouteParamsService
             ) {
-            this.scope = $scope;
-            this.postService = postService;
+            this.apiService = apiService;
 
             var slug : string = $routeParams["slug"];
             if (slug ) this.showPost(slug);
         }
 
         showPost(slug: string) {
-            this.postService.get({slug: slug}).$promise.then((post : IPostModel) => {
-                this.post = post;
-            });
+            this.post = this.apiService.post(slug);
         }
     }
 }

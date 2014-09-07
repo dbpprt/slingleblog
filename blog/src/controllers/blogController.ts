@@ -5,23 +5,23 @@ module Application {
     var app = angular.module("app");
 
     app.controller("BlogController",
-        ["$scope", "$routeParams", "PostService",
-            ($scope, $routeParams : ng.route.IRouteParamsService, postService)
-                => new BlogController($scope, postService, $routeParams)]);
+        ["$scope", "$routeParams", "ApiService",
+            ($scope, $routeParams : ng.route.IRouteParamsService, apiService)
+                => new BlogController($scope, apiService, $routeParams)]);
 
     export class BlogController {
         scope: any;
-        postService: IPostResource;
+        apiService: ApiService;
 
         posts: IPostModel[];
 
         constructor(
             $scope: IHomeControllerScope,
-            postService: IPostResource,
+            apiService: ApiService,
             $routeParams : ng.route.IRouteParamsService
             ) {
             this.scope = $scope;
-            this.postService = postService;
+            this.apiService = apiService;
 
             var page : number = $routeParams["page"];
             if (page && page > 0)
@@ -36,12 +36,10 @@ module Application {
         }
 
         showPosts(page: int) {
-            this.postService.query({page: page, pageSize: 10 }).$promise.then((posts : IPostModel[]) => {
-                this.posts = posts;
-                //angular.forEach(posts, (post : IPostModel) => {
-                //    alert(post.title);
-                //})
-            });
+            this.posts = this.apiService.posts(page);
+            angular.forEach(this.posts, (post : IPostModel) => {
+                alert(post.title);
+            })
         }
 
 

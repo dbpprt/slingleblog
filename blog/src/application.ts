@@ -31,7 +31,10 @@ module Application {
                 templateUrl: 'home/post.html',
                 controller: 'PostController as vm'
             })
-            .when('/page2', { templateUrl: 'page2.html', controller: 'BlogController' })
+            .when('/jobs', {
+                templateUrl: 'jobs/index.html',
+                controller: 'JobsController as vm'
+            });
     });
 
 }

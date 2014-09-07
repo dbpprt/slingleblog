@@ -8,6 +8,7 @@ using FileBiggy.Contracts;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Utilities;
 using SlingleBlog.Models;
+using SlingleBlog.ViewModels;
 
 namespace SlingleBlog.Controllers
 {
@@ -17,7 +18,7 @@ namespace SlingleBlog.Controllers
 
         public BlogController(
             IConfiguration configuration,
-            IEntitySet<Post> posts 
+            IEntitySet<Post> posts
             )
         {
             _posts = posts;
@@ -27,53 +28,83 @@ namespace SlingleBlog.Controllers
         [Route("api/blog/posts/{page}")]
         public IHttpActionResult Posts(int? page)
         {
-            var articles = _posts.ToList()
-                .Select(article => article.RenderPreviewMarkup());
+            var result = (from post in _posts.ToList()
+                          let content = post.RenderPreviewMarkup()
+                          select new PostViewModel
+                          {
+                              Content = content,
+                              Slug = post.Slug,
+                              PubDate = post.PubDate,
+                              Tags = post.Tags,
+                              Title = post.Title
+                          }).ToList();
 
-            return Json(articles);
+            return Json(result);
         }
 
         [HttpGet]
         [Route("api/blog/post/{slug}")]
         public IHttpActionResult Post(string slug)
         {
-            var article = _posts.FirstOrDefault(_ => _.Slug == slug.Trim());
+            var result = (from post in _posts.ToList()
+                where post.Slug == slug
+                let content = post.RenderMarkup()
+                select new PostViewModel
+                {
+                    Content = content,
+                    Slug = post.Slug,
+                    PubDate = post.PubDate,
+                    Tags = post.Tags,
+                    Title = post.Title
+                }).FirstOrDefault();
 
-            if (article != null)
-            {
-                return Json(article.RenderMarkup());
-            }
-
-            return NotFound();
+            return result != null ? (IHttpActionResult) Ok(result) : NotFound();
         }
- 
+
+        [HttpPost]
+        [Route("api/blog/post")]
+        public IHttpActionResult NewPost(PostViewModel model)
+        {
+
+            return Ok();
+        }
+
         [HttpGet]
         [Route("api/blog/tags")]
         public IHttpActionResult Tags()
         {
-            var articles = _posts.ToList();
-            var tags = articles
-                .SelectMany(article => article.Tags)
-                .Distinct();
-            var result = tags.Select(tag => new Tag
-            {
-                Name = tag,
-                Count = articles.Count(article => article.Tags.Contains(tag))
-            });
+            var posts = _posts.ToList();
 
-            return Json(result);
+            var result = (from tag in posts
+                .SelectMany(post => post.Tags)
+                .Distinct()
+                let count = posts.Count(article => article.Tags.Contains(tag))
+                select new TagViewModel
+                {
+                    Name = tag,
+                    Posts = count
+                }).ToList();
+            
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("api/blog/tag/{tag}")]
         public IHttpActionResult PostsByTag(string tag)
         {
-            var articles = _posts.ToList()
-                .Where(article => article.Tags.Contains(tag))
-                .Select(article => article.RenderPreviewMarkup())
-                .ToList();
+            var result = (from post in _posts.ToList()
+                          where post.Tags.Contains(tag)
+                          let content = post.RenderPreviewMarkup()
+                          select new PostViewModel
+                          {
+                              Content = content,
+                              Slug = post.Slug,
+                              PubDate = post.PubDate,
+                              Tags = post.Tags,
+                              Title = post.Title
+                          }).FirstOrDefault();
 
-            return Json(articles);
+            return result != null ? (IHttpActionResult)Ok(result) : NotFound();
         }
     }
 }

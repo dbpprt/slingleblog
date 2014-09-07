@@ -17,5 +17,7 @@ namespace SlingleBlog.Models
         public bool IsPublished { get; set; }
 
         public string[] Tags { get; set; }
+
+        public string Title { get; set; }
     }
 }

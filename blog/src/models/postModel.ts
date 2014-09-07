@@ -2,32 +2,29 @@
 
 module Application {
 
-    export interface IPostModel extends ng.resource.IResource<IPostModel> {
+    export interface IPostModel {
         title: string;
         content: string;
-        author: string;
-        categories: string[];
+        tags: string[];
         pubDate: string;
-        numberOfComments: number;
-        excerpt: string;
         slug: string;
     }
+
+    export class PostModel implements IPostModel {
+        title: string;
+        content: string;
+        tags: string[];
+        pubDate: string;
+        slug: string;
+
+        constructor (options?: {title: string; content: string; tags: string[]; pubDate: string; slug:string;}) {
+            if (options) {
+                this.title = options.title;
+                this.content = options.content;
+                this.tags = options.tags;
+                this.pubDate = options.pubDate;
+                this.slug = options.slug;
+            }
+        }
+    }
 }
-
-/*
- public string Title { get; set; }
-
- public string Content { get; set; }
-
- public string Author { get; set; }
-
- public string[] Categories { get; set; }
-
- public DateTime PubDate { get; set; }
-
- public int NumberOfComments { get; set; }
-
- public string Excerpt { get; set; }
-
- public string Slug { get; set; }
- */

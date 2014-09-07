@@ -10,6 +10,14 @@ namespace SlingleBlog.DataAccess
         {
         }
 
-        public EntitySet<Post> Posts { get; set; } 
+        public EntitySet<Post> Posts { get; set; }
+
+        public EntitySet<RegisteredJob> Jobs { get; set; }
+
+        public EntitySet<ScheduledJobExecution> ScheduledJobExecutions { get; set; }
+
+        public EntitySet<JobHistoryItem> JobHistory { get; set; }
+
+        public EntitySet<PrecompiledPage> PrecompiledPages { get; set; } 
     }
 }

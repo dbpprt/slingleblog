@@ -4,7 +4,7 @@ module Application {
 
     var app = angular.module("app");
 
-    app.factory("LayoutService", ['$resource', ($resource: ng.resource.IResourceService) => new LayoutService()]);
+    app.factory("LayoutService", () => new LayoutService());
 
     export interface ILayoutService {
         toggleAbout: any;

@@ -18,7 +18,13 @@ namespace SlingleBlog.Common.Configuration
 
         List<IRewriteRule> RewriteRules { get; set; }
 
+        List<IAccount> Accounts { get; }
+
+        IPrerendererSettings PrerendererSettings { get; }
+
         string ApiErrorPolicy { get; }
+
+        string PublicClientId { get; }
 
         string ApiKey { get;}
 

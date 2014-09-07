@@ -27,10 +27,24 @@ namespace SlingleBlog.Common.Configuration
 
         [JsonProperty("target-folder-header-field")]
         public string TargetFolderHeaderField { get; set; }
+        
         [JsonProperty("rewrite-rules")]
         public List<RewriteRule> Rules { get; set; }
 
+        [JsonProperty("accounts")]
+        public List<JsonAccount> JsonAccounts { get; set; }
+
+        public List<IAccount> Accounts { get; set; } 
+
         public List<IRewriteRule> RewriteRules { get; set; }
+
+        public IPrerendererSettings PrerendererSettings { get; set; }
+
+        [JsonProperty("prerenderer")]
+        public JsonPrerendererSettings JsonPrerendererSettings { get; set; }
+ 
+        [JsonProperty("public-client-id")]
+        public string PublicClientId { get; set; }
 
         [JsonProperty("api-key")]
         public string ApiKey { get; set; }
@@ -85,6 +99,8 @@ namespace SlingleBlog.Common.Configuration
 
             var config = JsonConvert.DeserializeObject<JsonConfiguration>(File.ReadAllText(path));
             config.RewriteRules = config.Rules.Cast<IRewriteRule>().ToList();
+            config.Accounts = config.JsonAccounts.Cast<IAccount>().ToList();
+            config.PrerendererSettings = config.JsonPrerendererSettings;
 
             return config;
         }

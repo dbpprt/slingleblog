@@ -11,6 +11,7 @@ using FileBiggy.IoC;
 using Microsoft.Owin;
 using Microsoft.Owin.Diagnostics;
 using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.Security.OAuth;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using Newtonsoft.Json.Serialization;
@@ -18,6 +19,8 @@ using Nito.AsyncEx;
 using OpenQA.Selenium.PhantomJS;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Framework;
+using SlingleBlog.Common.PrerenderEngine;
+using SlingleBlog.Common.Scheduler;
 using SlingleBlog.DataAccess;
 
 namespace SlingleBlog
@@ -52,9 +55,16 @@ namespace SlingleBlog
             container.RegisterType(typeof(IEntitySet<>), typeof(Repository<>), new ContainerControlledLifetimeManager());
 
             container.RegisterInstance(new AsyncReaderWriterLock());
-            container.RegisterInstance(PhantomJSDriverService.CreateDefaultService());
-            container.RegisterType<PhantomJSDriver>(new TransientLifetimeManager(), new InjectionFactory(
-                unityContainer => new PhantomJSDriver(unityContainer.Resolve<PhantomJSDriverService>())));
+            //container.RegisterInstance(PhantomJSDriverService.CreateDefaultService());
+            //container.RegisterType<PhantomJSDriver>(new TransientLifetimeManager(), new InjectionFactory(
+            //    unityContainer => new PhantomJSDriver(unityContainer.Resolve<PhantomJSDriverService>())));
+        }
+
+        protected override void RegisterJobs(List<Job> jobs)
+        {
+            base.RegisterJobs(jobs);
+
+            jobs.Add(new PrerenderJob(_configuration.PrerendererSettings));
         }
 
         protected override Task ApplicationStartup()
@@ -63,20 +73,20 @@ namespace SlingleBlog
                 .IsVerbose()
                 .Save();
 
-            Task.Factory.StartNew(() =>
-            {
-                using (var engine = UnityContainer.Resolve<PhantomJSDriver>())
-                {
-                    var manage = engine.Manage();
-                    manage.Window.Maximize();
+            //Task.Factory.StartNew(() =>
+            //{
+            //    using (var engine = UnityContainer.Resolve<PhantomJSDriver>())
+            //    {
+            //        var manage = engine.Manage();
+            //        manage.Window.Maximize();
 
-                    engine.Url = "http://localhost:8080/";
-                    engine.Navigate();
-                    Thread.Sleep(2000);
-                    engine.GetScreenshot().SaveAsFile("C:\\slingle\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
-                }
-                return Task.FromResult(0);
-            });
+            //        engine.Url = "http://localhost:8080/";
+            //        engine.Navigate();
+            //        Thread.Sleep(2000);
+            //        engine.GetScreenshot().SaveAsFile("C:\\slingle\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
+            //    }
+            //    return Task.FromResult(0);
+            //});
 
             return base.ApplicationStartup();
         }
@@ -84,8 +94,6 @@ namespace SlingleBlog
         protected override void RegisterRoutes(HttpRouteCollection routes)
         {
             base.RegisterRoutes(routes);
-
-
         }
 
         protected override void RegisterRewriteRules(List<IRewriteRule> rules)
@@ -95,7 +103,10 @@ namespace SlingleBlog
             rules.AddRange(_configuration.RewriteRules);
         }
 
-        protected override async Task ExecutePipeline(Func<IDictionary<string, object>, Task> next, IDictionary<string, object> environment, IUnityContainer scope)
+        protected override async Task ExecutePipeline(
+            Func<IDictionary<string, object>, Task> next, 
+            IDictionary<string, object> environment, 
+            IUnityContainer scope)
         {
             using (var upgradable = await _lock.UpgradeableReaderLockAsync())
             {
@@ -122,6 +133,18 @@ namespace SlingleBlog
                 ShowQuery = true,
                 ShowSourceCode = true,
                 SourceCodeLineCount = 20
+            };
+        }
+
+        protected override OAuthAuthorizationServerOptions OAuthAuthorizationServerOptions()
+        {
+            return new OAuthAuthorizationServerOptions
+            {
+                TokenEndpointPath = new PathString("/api/oauth/token"),
+                Provider = new ApplicationOAuthProvider(_configuration.PublicClientId),
+                AuthorizeEndpointPath = new PathString("/api/oauth/external"),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+                AllowInsecureHttp = true
             };
         }
 

@@ -1,19 +1,43 @@
 {
-    "api-key":  "5X2WbulsDjjfEMgYG21oF3TFU5RIFRvh7MNLNvexyq1y0n1OLE3AHoaBmqLgyKaOAee3egYOIxxtEtuIk4fu8cDLihoGbiazIVNi5HkZYZxexaK2ibvi1vAAzD9ZceD7",
-    "api-key-header-field":  "AccessToken",
-    "target-folder-header-field":  "TargetFolder",
+    "api-key": "5X2WbulsDjjfEMgYG21oF3TFU5RIFRvh7MNLNvexyq1y0n1OLE3AHoaBmqLgyKaOAee3egYOIxxtEtuIk4fu8cDLihoGbiazIVNi5HkZYZxexaK2ibvi1vAAzD9ZceD7",
+
+    "api-key-header-field": "AccessToken",
+    "target-folder-header-field": "TargetFolder",
+
     "enable-error-page": true,
+
     "default-files": [
         "index.html"
     ],
+
+    "public-client-id": "self",
+
+    "prerenderer": {
+        "recompile-page-after-hours": 6,
+        "load-timeout": 10,
+        "dom-variable": ""
+    },
+
     "api-error-policy": "always",
     "data-directory": "%SystemDrive%\\slingle",
-    "rewrite-rules" :  [
-          {
-              "name":  "angularjs-html5-navigation",
-              "template":  "{*data}",
-              "rewrite-to":  "/index.html",
-              "constraint":  ".*?$(?<!\\.js|.css|.eot|.png)"
-          }
-      ]
+
+    "rewrite-rules": [
+        {
+            "name": "angularjs-html5-navigation",
+            "template": "{*data}",
+            "rewrite-to": "/index.html",
+            "constraint": ".*?$(?<!\\.js|.css|.eot|.png)"
+        }
+    ],
+
+    "accounts": [
+        {
+            "username": "admin",
+            "password": "admin",
+            "displayname": "admin",
+            "roles": [ 
+                "Administrator"
+            ]
+        }
+    ]
 }
