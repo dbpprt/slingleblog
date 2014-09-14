@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using FileBiggy.Contracts;
+using MobileDB.Contracts;
 using SlingleBlog.Models;
 using SlingleBlog.ViewModels;
 
@@ -29,8 +28,8 @@ namespace SlingleBlog.Controllers
         [Route("api/sys/jobs")]
         public IHttpActionResult Jobs()
         {
-            var jobs = _jobs.ToList();
-            var scheduledExecutions = _scheduledJobExecutions.ToList();
+            var jobs = _jobs.AsQueryable().ToList();
+            var scheduledExecutions = _scheduledJobExecutions.AsQueryable().ToList();
 
             var result = (from job in jobs
                           let scheduled = scheduledExecutions.FirstOrDefault(_ => _.JobId == job.Id)

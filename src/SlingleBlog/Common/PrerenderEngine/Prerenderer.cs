@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using FileBiggy.Contracts;
+using MobileDB.Contracts;
 using OpenQA.Selenium.PhantomJS;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Models;
@@ -40,7 +38,7 @@ namespace SlingleBlog.Common.PrerenderEngine
         public async Task ProcessPendingPages(CancellationToken cancellationToken)
         {
             var prerenderBefore = DateTime.UtcNow.Subtract(new TimeSpan(_configuration.RecompileAfterHours, 0, 0));
-            var pendingPages = _pages.Where(_ => _.LastPrecompile < prerenderBefore).ToList();
+            var pendingPages = (await _pages.AsQueryableAsync()).Where(_ => _.LastPrecompile < prerenderBefore).ToList();
 
             foreach (var pendingPage in pendingPages)
             {

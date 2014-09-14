@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Web.Http;
-using FileBiggy.Contracts;
+using MobileDB.Contracts;
 using SlingleBlog.Common.Configuration;
-using SlingleBlog.Common.Utilities;
 using SlingleBlog.Models;
 using SlingleBlog.ViewModels;
 
@@ -28,7 +23,7 @@ namespace SlingleBlog.Controllers
         [Route("api/blog/posts/{page}")]
         public IHttpActionResult Posts(int? page)
         {
-            var result = (from post in _posts.ToList()
+            var result = (from post in _posts.AsQueryable().ToList()
                           let content = post.RenderPreviewMarkup()
                           select new PostViewModel
                           {
@@ -46,7 +41,7 @@ namespace SlingleBlog.Controllers
         [Route("api/blog/post/{slug}")]
         public IHttpActionResult Post(string slug)
         {
-            var result = (from post in _posts.ToList()
+            var result = (from post in _posts.AsQueryable().ToList()
                 where post.Slug == slug
                 let content = post.RenderMarkup()
                 select new PostViewModel
@@ -73,7 +68,7 @@ namespace SlingleBlog.Controllers
         [Route("api/blog/tags")]
         public IHttpActionResult Tags()
         {
-            var posts = _posts.ToList();
+            var posts = _posts.AsQueryable().ToList();
 
             var result = (from tag in posts
                 .SelectMany(post => post.Tags)
@@ -92,7 +87,7 @@ namespace SlingleBlog.Controllers
         [Route("api/blog/tag/{tag}")]
         public IHttpActionResult PostsByTag(string tag)
         {
-            var result = (from post in _posts.ToList()
+            var result = (from post in _posts.AsQueryable().ToList()
                           where post.Tags.Contains(tag)
                           let content = post.RenderPreviewMarkup()
                           select new PostViewModel

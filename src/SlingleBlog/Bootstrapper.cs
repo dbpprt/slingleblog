@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
+using System.Dynamic;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FileBiggy.Contracts;
-using FileBiggy.Factory;
-using FileBiggy.IoC;
 using Microsoft.Owin;
 using Microsoft.Owin.Diagnostics;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Security.OAuth;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
+using MobileDB.Common.Factory;
+using MobileDB.Contracts;
 using Newtonsoft.Json.Serialization;
 using Nito.AsyncEx;
-using OpenQA.Selenium.PhantomJS;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Framework;
 using SlingleBlog.Common.PrerenderEngine;
@@ -47,17 +45,23 @@ namespace SlingleBlog
         {
             container.RegisterInstance<IConfiguration>(_configuration);
 
-            var entityContext = ContextFactory.Create<EntityContext>()
-                .AsJsonDatabase()
-                .WithDatabaseDirectory(_configuration.StorageBasePath)
-                .Build();
-            container.RegisterInstance<IBiggyContext>(entityContext);
-            container.RegisterType(typeof(IEntitySet<>), typeof(Repository<>), new ContainerControlledLifetimeManager());
+            var connectionString = ContextFactory.Create<EntityContext>()
+                .WithPhysicalFilesystem(_configuration.StorageBasePath)
+                .ConnectionString;
+            container.RegisterType<IDbContext, EntityContext>(new HierarchicalLifetimeManager(),
+                new InjectionConstructor(connectionString));
+            container.RegisterType(typeof (IEntitySet<>),
+                new InjectionFactory(EntitySetFactory));
 
             container.RegisterInstance(new AsyncReaderWriterLock());
-            //container.RegisterInstance(PhantomJSDriverService.CreateDefaultService());
-            //container.RegisterType<PhantomJSDriver>(new TransientLifetimeManager(), new InjectionFactory(
-            //    unityContainer => new PhantomJSDriver(unityContainer.Resolve<PhantomJSDriverService>())));
+        }
+
+        private object EntitySetFactory(IUnityContainer unityContainer, Type type, string arg3)
+        {
+            var context = unityContainer.Resolve<IDbContext>();
+            var entityType = type.GenericTypeArguments.First();
+            var set = context.Set(entityType);
+            return set;
         }
 
         protected override void RegisterJobs(List<Job> jobs)
@@ -119,7 +123,7 @@ namespace SlingleBlog
         protected override void ConfigureHttpConfiguration(HttpConfiguration configuration)
         {
             base.ConfigureHttpConfiguration(configuration);
-            configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            //configuration.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
         protected override ErrorPageOptions ErrorPageOptions()

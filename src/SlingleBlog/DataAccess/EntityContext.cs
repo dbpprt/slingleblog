@@ -1,23 +1,24 @@
-﻿using FileBiggy;
+﻿using MobileDB;
+using MobileDB.Contracts;
 using SlingleBlog.Models;
 
 namespace SlingleBlog.DataAccess
 {
-    public class EntityContext : BiggyContext
+    public class EntityContext : DbContext
     {
         public EntityContext(string connectionString) 
             : base(connectionString)
         {
         }
 
-        public EntitySet<Post> Posts { get; set; }
+        public IEntitySet<Post> Posts { get; set; }
 
-        public EntitySet<RegisteredJob> Jobs { get; set; }
+        public IEntitySet<RegisteredJob> Jobs { get; set; }
 
-        public EntitySet<ScheduledJobExecution> ScheduledJobExecutions { get; set; }
+        public IEntitySet<ScheduledJobExecution> ScheduledJobExecutions { get; set; }
 
-        public EntitySet<JobHistoryItem> JobHistory { get; set; }
+        public IEntitySet<JobHistoryItem> JobHistory { get; set; }
 
-        public EntitySet<PrecompiledPage> PrecompiledPages { get; set; } 
+        public IEntitySet<PrecompiledPage> PrecompiledPages { get; set; } 
     }
 }

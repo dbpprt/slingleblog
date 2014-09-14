@@ -1,5 +1,5 @@
 ﻿using System;
-using FileBiggy.Attributes;
+using MobileDB.Common.Attributes;
 
 namespace SlingleBlog.Models
 {
