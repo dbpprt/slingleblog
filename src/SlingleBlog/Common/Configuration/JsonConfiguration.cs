@@ -27,14 +27,17 @@ namespace SlingleBlog.Common.Configuration
 
         [JsonProperty("target-folder-header-field")]
         public string TargetFolderHeaderField { get; set; }
-        
+
+        [JsonProperty("use-scheduler")]
+        public bool UseScheduler { get; set; }
+
         [JsonProperty("rewrite-rules")]
         public List<RewriteRule> Rules { get; set; }
 
         [JsonProperty("accounts")]
         public List<JsonAccount> JsonAccounts { get; set; }
 
-        public List<IAccount> Accounts { get; set; } 
+        public List<IAccount> Accounts { get; set; }
 
         public List<IRewriteRule> RewriteRules { get; set; }
 
@@ -42,7 +45,7 @@ namespace SlingleBlog.Common.Configuration
 
         [JsonProperty("prerenderer")]
         public JsonPrerendererSettings JsonPrerendererSettings { get; set; }
- 
+
         [JsonProperty("public-client-id")]
         public string PublicClientId { get; set; }
 
@@ -94,7 +97,16 @@ namespace SlingleBlog.Common.Configuration
         {
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException("Config file not found!", path);
+                // workaround for iis 
+
+                var fileName = Path.GetFileName(path);
+                path = Path.GetDirectoryName(path);
+                path = Path.Combine(path, "bin", fileName);
+
+                if (!File.Exists(path))
+                {
+                    throw new FileNotFoundException("Config file not found! " + path, path);
+                }
             }
 
             var config = JsonConvert.DeserializeObject<JsonConfiguration>(File.ReadAllText(path));

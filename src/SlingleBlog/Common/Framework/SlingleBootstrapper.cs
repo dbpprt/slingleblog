@@ -51,6 +51,8 @@ namespace SlingleBlog.Common.Framework
 
         public abstract void RegisterDependencies(IUnityContainer container);
 
+        public virtual bool UseScheduler { get { return true; } }
+
         internal static CancellationToken GetShutdownToken(IDictionary<string, object> env)
         {
             object value;
@@ -89,12 +91,12 @@ namespace SlingleBlog.Common.Framework
             jobs.ForEach(_ => _container.RegisterInstance(_.JobName, _, new ContainerControlledLifetimeManager()));
 
             var dependencyResolver = new UnityDependencyResolver(_container);
-            
+
             app.SetApplicationContainer(dependencyResolver);
             app.Use(
                 new Func<Func<IDictionary<string, object>, Task>, Func<IDictionary<string, object>, Task>>(
                     next => new ContainerMiddleware(next, app, ConfigureRequestContainer, ApplicationStartup, ExecutePipeline).Invoke));
-            
+
             var config = new HttpConfiguration
             {
                 DependencyResolver = dependencyResolver,
@@ -111,7 +113,7 @@ namespace SlingleBlog.Common.Framework
                 app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
                 app.UseOAuthBearerTokens(oAuthOptions);
             }
-            
+
             app.UseWebApi(new OwinDependencyScopeHttpServerAdapter(config));
 
             var rewriteRules = new List<IRewriteRule>();
@@ -138,7 +140,8 @@ namespace SlingleBlog.Common.Framework
             var shutdownToken = GetShutdownToken(app.Properties);
             shutdownToken.Register(ApplicationShutdown);
 
-            Scheduler.Start();
+            if (UseScheduler)
+                Scheduler.Start();
         }
 
         protected virtual void RegisterRoutes(HttpRouteCollection routes) { }

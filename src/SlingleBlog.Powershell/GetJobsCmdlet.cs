@@ -4,6 +4,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
+using SlingleBlog.Powershell.Common;
 using SlingleBlog.Powershell.Models;
 
 namespace SlingleBlog.Powershell
@@ -21,6 +22,11 @@ namespace SlingleBlog.Powershell
         protected override void ProcessRecord()
         {
             WriteVerbose("Connecting to blog " + Blog.Endpoint);
+
+            using (var api = new BlogApi(Blog))
+            {
+                WriteObject(api.GetJobs());
+            }
         }
     }
 }

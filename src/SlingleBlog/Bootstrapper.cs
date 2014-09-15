@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using Microsoft.Owin.StaticFiles;
 using Microsoft.Practices.Unity;
 using MobileDB.Common.Factory;
 using MobileDB.Contracts;
-using Newtonsoft.Json.Serialization;
 using Nito.AsyncEx;
 using SlingleBlog.Common.Configuration;
 using SlingleBlog.Common.Framework;
@@ -71,27 +69,16 @@ namespace SlingleBlog
             jobs.Add(new PrerenderJob(_configuration.PrerendererSettings));
         }
 
+        public override bool UseScheduler
+        {
+            get { return _configuration.UseScheduler; }
+        }
+
         protected override Task ApplicationStartup()
         {
             Logger.Write("Server started successfully and is ready to receive requests!")
                 .IsVerbose()
                 .Save();
-
-            //Task.Factory.StartNew(() =>
-            //{
-            //    using (var engine = UnityContainer.Resolve<PhantomJSDriver>())
-            //    {
-            //        var manage = engine.Manage();
-            //        manage.Window.Maximize();
-
-            //        engine.Url = "http://localhost:8080/";
-            //        engine.Navigate();
-            //        Thread.Sleep(2000);
-            //        engine.GetScreenshot().SaveAsFile("C:\\slingle\\" + Guid.NewGuid() + ".png", ImageFormat.Png);
-            //    }
-            //    return Task.FromResult(0);
-            //});
-
             return base.ApplicationStartup();
         }
 

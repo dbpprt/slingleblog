@@ -147,6 +147,7 @@
     <Compile Include="Common\PrerenderEngine\PrerenderJob.cs" />
     <Compile Include="Common\Scheduler\Job.cs" />
     <Compile Include="Common\Scheduler\JobScheduler.cs" />
+    <Compile Include="Common\TokenAuthorizeAttribute.cs" />
     <Compile Include="Common\Unity\Constants.cs" />
     <Compile Include="Common\Unity\ContainerMiddleware.cs" />
     <Compile Include="Common\Unity\IDynamicRegistrationDelegate.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\JobViewModel.cs" />
     <Compile Include="ViewModels\PostViewModel.cs" />
+    <Compile Include="ViewModels\PublishResult.cs" />
     <Compile Include="ViewModels\TagViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

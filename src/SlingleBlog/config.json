@@ -4,6 +4,8 @@
     "api-key-header-field": "AccessToken",
     "target-folder-header-field": "TargetFolder",
 
+    "use-scheduler":  false,
+
     "enable-error-page": true,
 
     "default-files": [

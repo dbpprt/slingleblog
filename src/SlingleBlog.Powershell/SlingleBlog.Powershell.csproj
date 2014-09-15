@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -46,12 +49,21 @@
   <ItemGroup>
     <Compile Include="Common\BlogApi.cs" />
     <Compile Include="GetBlogCmdlet.cs" />
+    <Compile Include="GetPost.cs" />
     <Compile Include="GetJobsCmdlet.cs" />
     <Compile Include="Models\Blog.cs" />
+    <Compile Include="NewPostCmdlet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SlingleBlog\SlingleBlog.csproj">
+      <Project>{1C0FA5E4-6E57-464F-84A2-B914332CA8BB}</Project>
+      <Name>SlingleBlog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

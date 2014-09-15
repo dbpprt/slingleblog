@@ -42,7 +42,6 @@ namespace SlingleBlog.Controllers
                               Interval = job.RunEvery,
                               NextScheduledExecution = nextScheduledExecution
                           }).ToList();
-
             return Ok(result);
         }
     }

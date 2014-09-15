@@ -31,5 +31,7 @@ namespace SlingleBlog.Common.Configuration
         string ApiKeyHeaderField { get;}
 
         string TargetFolderHeaderField { get; }
+
+        bool UseScheduler { get; }
     }
 }
